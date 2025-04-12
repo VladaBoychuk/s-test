@@ -2,9 +2,15 @@ provider "aws" {
   region = "eu-north-1"
 }
 
+resource "aws_key_pair" "deployer" {
+  key_name   = "ansible-key"
+  public_key = var.ssh_public_key
+}
+
 resource "aws_instance" "web_server" {
-  ami           = "ami-0c1ac8a41498c1a9c" 
+  ami           = "ami-0c1ac8a41498c1a9c" # Ubuntu AMI
   instance_type = "t3.micro"
+  key_name      = aws_key_pair.deployer.key_name
 
   tags = {
     Name = "web-server"
@@ -13,7 +19,7 @@ resource "aws_instance" "web_server" {
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    private_key = file("~/.ssh/id_rsa")
+    private_key = var.ssh_private_key
     host        = self.public_ip
   }
 
