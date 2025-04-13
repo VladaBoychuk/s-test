@@ -36,13 +36,6 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
 
-      - name: Get public IP from Terraform (using jq)
-        id: get_ip
-        run: |
-          echo "Fetching EC2 IP..."
-          IP=$(terraform output -json public_ip | jq -r '.')
-          echo "ip=$IP" >> $GITHUB_OUTPUT
-          
       - name: Install Ansible
         run: |
           sudo apt-get update
@@ -58,7 +51,7 @@ jobs:
       - name: Set up Ansible inventory
         run: |
           echo "[web]" > inventory.ini
-          echo "${{ steps.get_ip.outputs.ip }} ansible_user=ubuntu ansible_ssh_private_key_file=~/id_rsa" >> inventory.ini
+          echo "$(terraform output -raw public_ip | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+') ansible_user=ubuntu ansible_ssh_private_key_file=~/id_rsa" >> inventory.ini
         env:
           IP: ${{ steps.terraform.outputs.public_ip }}
 
