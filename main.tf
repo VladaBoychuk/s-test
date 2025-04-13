@@ -24,7 +24,7 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "web" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = "t3.micro"
-  key_name               = var.key_name # <<< Pass in as variable from secrets
+  key_name               = var.ansible_key_name # <<< Pass in as variable from secrets
   vpc_security_group_ids = ["sg-089e4d0a86b33447f"]
 
   tags = {
