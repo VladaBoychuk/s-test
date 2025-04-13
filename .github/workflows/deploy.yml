@@ -50,7 +50,7 @@ jobs:
         run: |
           echo "Fetching EC2 IP..."
           IP=$(terraform output -raw public_ip)
-          echo "ip=$IP" >> $GITHUB_OUTPUT
+           echo "ip=${IP}" >> "$GITHUB_OUTPUT"
 
   ansible:
     runs-on: ubuntu-latest
