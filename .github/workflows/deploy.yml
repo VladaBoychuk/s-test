@@ -58,13 +58,15 @@ jobs:
 
       - name: Add private key
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/id_rsa
+          cat <<EOF >  ~/id_rsa
+              ${{ secrets.SSH_PRIVATE_KEY }}
+              EOF
+    
           chmod 600  ~/id_rsa
 
       - name: Create inventory.ini dynamically
         run: |
           echo "[web]" > inventory.ini
-          echo "${IP} ansible_user=ubuntu ansible_ssh_private_key_file=~/id_rsa"
           echo "${IP} ansible_user=ubuntu ansible_ssh_private_key_file=~/id_rsa" >> inventory.ini
 
       - name: Run Ansible Playbook
