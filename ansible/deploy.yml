@@ -39,11 +39,11 @@
       copy:
         src: ../app/index.html
         dest: /usr/share/nginx/html/index.html
-        
+
     - name: Add puppy image to Nginx     
       copy:
         src: ../app/puppy.png
-        dest: /usr/share/nginx/html/puppy.png
+        dest: /usr/share/nginx/puppy.png
 
     - name: Stop Nginx container
       docker_container:
