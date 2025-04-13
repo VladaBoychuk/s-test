@@ -4,10 +4,6 @@ provider "aws" {
   secret_key = var.secret_key
 }
 
-#resource "aws_key_pair" "deployer" {
-#  key_name   = "ansible-key"
-#  public_key = var.ssh_public_key
-#}
 
 data "aws_ami" "ubuntu" {
   most_recent = true
@@ -28,7 +24,7 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "web" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = "t3.micro"
-  key_name               = aws_key_pair.deployer.key_name
+  key_name               = var.key_name # <<< Pass in as variable from secrets
   vpc_security_group_ids = ["sg-089e4d0a86b33447f"]
 
   tags = {

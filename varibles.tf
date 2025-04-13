@@ -13,3 +13,9 @@ variable "access_key" {
 variable "secret_key" {
   type = string
 }
+
+
+variable "ansible_key_name" {
+  description = "The name of the existing key pair to use"
+  type        = string
+}
