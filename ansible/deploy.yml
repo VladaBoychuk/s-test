@@ -25,23 +25,22 @@
         image: nginx:latest
         state: started
         ports:
-          - "80:80"
+            - "80:80" 
+            - "443:80"
         volumes:
           - /usr/share/nginx/html:/usr/share/nginx/html  # Mounting host folder to the container
 
     - name: Add puppy HTML page to Nginx
       copy:
+        src: app/index.html  
         dest: /usr/share/nginx/html/index.html
-        content: |
-          <html>
-          <head><title>Puppy Page</title></head>
-          <body>
-            <h1>Welcome to the Puppy Page!</h1>
-            <img src="https://place-puppy.com/200x200" alt="puppy">
-          </body>
-          </html>
 
-    - name: Restart Nginx container to apply changes
+    - name: Stop Nginx container
       docker_container:
         name: nginx
-        state: restarted
+        state: stopped
+
+    - name: Start Nginx container
+      docker_container:
+        name: nginx
+        state: started

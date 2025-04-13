@@ -7,13 +7,14 @@ on:
     branches:
       - release
 
-
 jobs:
   terraform:
     runs-on: ubuntu-latest
+    outputs:
+      ec2_ip: ${{ steps.get_ip.outputs.ip }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2 #Завантажує репозиторій на машину
+        uses: actions/checkout@v2
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
@@ -24,8 +25,17 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          TF_VAR_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          TF_VAR_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
+          TF_VAR_ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Get public IP from Terraform
+        id: get_ip
+        run: |
+          echo "Fetching EC2 IP..."
+          IP=$(terraform output -raw public_ip)
+          echo "ip=$IP" >> $GITHUB_OUTPUT
 
   ansible:
     runs-on: ubuntu-latest
@@ -35,11 +45,23 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install Ansible
-        run: sudo apt-get install -y ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y software-properties-common
+          sudo add-apt-repository --yes --update ppa:ansible/ansible
+          sudo apt-get install -y ansible
+
+      - name: Create inventory.ini dynamically
+        run: |
+          echo "[web]" > inventory.ini
+          echo "${{ needs.terraform.outputs.ec2_ip }} ansible_user=ubuntu ansible_ssh_private_key_file=./id_rsa" >> inventory.ini
+
+      - name: Add private key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > id_rsa
+          chmod 600 id_rsa
 
       - name: Run Ansible Playbook
-        run: |
-          ansible-playbook -i inventory.ini deploy.yml
+        run: ansible-playbook -i inventory.ini ansible/deploy.yml
         env:
           ANSIBLE_HOST_KEY_CHECKING: 'False'
-        
