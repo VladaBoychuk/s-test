@@ -28,6 +28,9 @@ jobs:
           set +e
           terraform import aws_key_pair.deployer ansible-key || echo "Key does not exist yet or already managed"
           set -e
+        env:
+            TF_VAR_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            TF_VAR_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
