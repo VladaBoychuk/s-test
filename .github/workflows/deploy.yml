@@ -58,10 +58,7 @@ jobs:
 
       - name: Add private key
         run: |
-          cat <<EOF >  ~/id_rsa
-              ${{ secrets.SSH_PRIVATE_KEY }}
-              EOF
-    
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' | sed 's/\\n/\n/g' > ~/id_rsa
           chmod 600  ~/id_rsa
 
       - name: Create inventory.ini dynamically
