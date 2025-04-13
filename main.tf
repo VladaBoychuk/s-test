@@ -4,10 +4,10 @@ provider "aws" {
   secret_key = var.secret_key
 }
 
-resource "aws_key_pair" "deployer" {
-  key_name   = "ansible-key"
-  public_key = var.ssh_public_key
-}
+#resource "aws_key_pair" "deployer" {
+#  key_name   = "ansible-key"
+#  public_key = var.ssh_public_key
+#}
 
 data "aws_ami" "ubuntu" {
   most_recent = true
