@@ -1,8 +1,7 @@
 provider "aws" {
-  region = "eu-north-1"
+  region     = "eu-north-1"
   access_key = var.access_key
   secret_key = var.secret_key
-
 }
 
 resource "aws_key_pair" "deployer" {
@@ -27,11 +26,11 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_instance" "web" {
-  ami           = data.aws_ami.ubuntu.id
-  instance_type = "t3.micro"
-
-  key_name = aws_key_pair.deployer.key_name
+  ami                    = data.aws_ami.ubuntu.id
+  instance_type          = "t3.micro"
+  key_name               = aws_key_pair.deployer.key_name
   vpc_security_group_ids = ["sg-089e4d0a86b33447f"]
+
   tags = {
     Name = "web"
   }
