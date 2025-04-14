@@ -8,7 +8,7 @@ on:
       - release
 
 jobs:
-  terraform:
+  terraform-ansible:
     runs-on: ubuntu-latest
     env:
       TF_VAR_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
